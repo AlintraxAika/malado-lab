@@ -118,12 +118,12 @@ def labRetriever(name, date):
 
 		# Click the login button
 		page.locator('button:has-text("Entrar")').click()
-		page.wait_for_selector('#preloader-vue', state='hidden', timeout=10000)
+		page.wait_for_selector('#preloader-vue', state='hidden', timeout=15000)
 		page.fill('input[name="vf__nompac"]', name)
 		page.keyboard.press('Enter')
 		
 		# Extract exams
-		page.wait_for_selector('#preloader-vue', state='hidden', timeout=10000)
+		page.wait_for_selector('#preloader-vue', state='hidden', timeout=15000)
 		rows = page.query_selector_all("tbody tr")
 		
 		for row in rows:
