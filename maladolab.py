@@ -20,7 +20,7 @@ def text_cleaner(txt):
 			string += "; HB: " + pattern.group(1)
 			pattern = re.search(r'LEUCOCITOS.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string += "; LCT: " + pattern.group(1)
-			pattern = re.search(r'LEUCOCITOS.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			pattern = re.search(r'PLAQUETAS.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string += "; PLQ: " + pattern.group(1)
 		elif exam_name == "GRUPO SANGUÍNEO":
 			string = "GS: "
@@ -88,9 +88,21 @@ def text_cleaner(txt):
 			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "LIPASE":
-			exam_name = "LIPASE:"
+			exam_name = "LIPASE: "
 			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
+		elif exam_name == "FERRITINA":
+			exam_name = "FERRITINA: "
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			string = exam_name + pattern.group(1)
+		elif exam_name == "FERRO SERICO":
+			exam_name = "FERRO SERICO: "
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			string = exam_name + pattern.group(1)
+		elif exam_name == "RETICULOCITOS":
+			exam_name = "RETICULOCITOS: "
+			pattern = re.search(r'PERCENTUAL:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string = exam_name + pattern.group(1) + " %"
 		else:
 			return txt
 	except AttributeError:
@@ -168,7 +180,7 @@ if date_true:
 		data = st.text_input("DATA:", value=date.today().strftime("%d/%m/%Y"))
 if st.button("EXTRAIR"):
 	if date_true:
-		lab = labRetriever(nome_paciente, data)
+		lab = labRetriever(nome_paciente, data).upper()
 	else:
-		lab = labRetriever(nome_paciente, False)
+		lab = labRetriever(nome_paciente, False).upper()
 st.text_area("LABORATÓRIO:", height=300, value=lab)
