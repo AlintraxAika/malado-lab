@@ -17,11 +17,11 @@ def text_cleaner(txt):
 			pattern = re.search(r'HEMATOCRITO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string += pattern.group(1)
 			pattern = re.search(r'HEMOGLOBINA.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
-			string += "; HB: " + pattern.group(1)
+			string += " | HB: " + pattern.group(1)
 			pattern = re.search(r'LEUCOCITOS.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
-			string += "; LCT: " + pattern.group(1)
+			string += " | LEUCO: " + pattern.group(1)
 			pattern = re.search(r'PLAQUETAS.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
-			string += "; PLQ: " + pattern.group(1)
+			string += " | PLAQ: " + pattern.group(1)
 		elif exam_name == "GRUPO SANGUÍNEO":
 			string = "GS: "
 			pattern = re.search(r'GRUPO SANGUINEO.*?:\s*([A-Z]+)', txt, re.IGNORECASE)
@@ -30,74 +30,86 @@ def text_cleaner(txt):
 			string += pattern.group(1)
 		elif exam_name == "DESIDROGENASE LÁCTICA":
 			exam_name = "DHL: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 			string = string.replace("  ", " ")
 		elif exam_name == "UREIA":
 			exam_name = "UR: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "CREATININA":
 			exam_name = "CR: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "BILIRRUBINA TOTAL E FRAÇÕES":
 			string = "BT: "
-			pattern = re.search(r'BILIRRUBINA\s+TOTAL.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'BILIRRUBINA\s+TOTAL.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string += pattern.group(1)
-			pattern = re.search(r'BILIRRUBINA\s+DIRETA.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
-			string += "; BD: " + pattern.group(1)
-			pattern = re.search(r'BILIRRUBINA\s+INDIRETA.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
-			string += "; BI: " + pattern.group(1)
+			pattern = re.search(r'BILIRRUBINA\s+DIRETA.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += " | BD: " + pattern.group(1)
+			pattern = re.search(r'BILIRRUBINA\s+INDIRETA.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += " | BI: " + pattern.group(1)
 		elif exam_name == "TRANSAMINASE OXALACÉTICA (TGO/AST)":
 			exam_name = "AST: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "TRANSAMINASE PIRÚVICA (TGP/ALT)":
 			exam_name = "ALT: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "RAZAO PROTEINA/CREATININA - URINA":
 			exam_name = "PROT/CR: "
-			pattern = re.search(r'RESULTADO:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "PROTEINURIA 24H":
 			string = "PROT/24H: "
-			pattern = re.search(r'RESULTADO:\s*([\d.,]+)\s*\w+/\w+', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO:\s*([\d.,]+)\s', txt, re.IGNORECASE)
 			string += pattern.group(1) + " MG (VOL: "
-			pattern = re.search(r'VOLUME\s+URINARIO:\s*([\d.,]+)\s*mL', txt, re.IGNORECASE)
+			pattern = re.search(r'VOLUME\s+URINARIO:\s*([\d.,]+)', txt, re.IGNORECASE)
 			string += pattern.group(1) + " ML)"
 		elif exam_name == "ÁCIDO ÚRICO":
 			exam_name = "AC. UR: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "SÓDIO":
 			exam_name = "NA: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "POTÁSSIO":
 			exam_name = "K: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string = exam_name + pattern.group(1)
+		elif exam_name == "PROTEINA C REATIVA":
+			exam_name = "PCR: "
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string = exam_name + pattern.group(1)
+		elif exam_name == "CÁLCIO":
+			exam_name = "CA: "
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string = exam_name + pattern.group(1)
+		elif exam_name == "ALBUMINA":
+			exam_name = "ALBUMINA: "
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "MAGNÉSIO":
 			exam_name = "MG: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "AMILASE":
 			exam_name = "AMILASE: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "LIPASE":
 			exam_name = "LIPASE: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "FERRITINA":
 			exam_name = "FERRITINA: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "FERRO SERICO":
 			exam_name = "FERRO SERICO: "
-			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?\s*\w+/\w+)', txt, re.IGNORECASE)
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "RETICULOCITOS":
 			exam_name = "RETICULOCITOS: "
@@ -152,7 +164,7 @@ def labRetriever(name, date):
 				exam_date = datetime.datetime(int(s[2]),int(s[1]),int(s[0]))
 				if exam_date < date_limit:
 					break
-			text += f"{row_name}:{nl}({row_date}): "
+			text += f"{row_name}:{nl}({row_date}): ".replace("/20", "/")
 			if link:
 				link.click()
 				links = page.query_selector_all('a[title*="Pronto"]')
@@ -160,13 +172,25 @@ def labRetriever(name, date):
 					li.click()
 					card_body = page.wait_for_selector('div.card-body[style=""]')
 					text += text_cleaner(card_body.inner_text())
-					text += f"; "
+					text += f" | "
 				page.locator('button:has-text("Fechar")').click()
+			text = text[:-3]
 			text += f"{nl}{nl}"
 
 		browser.close()
 		
 		return text
+
+#NO GRAPHICAL INTERFACE
+#print("NOME:", end=" ")
+#nn = input()
+#print("DATA LIMITE (data/x):", end=" ")
+#dt = input()
+#dt = dt.upper()
+#if dt == "X":
+#	lab = labRetriever(nome_paciente, False).upper()
+#else:
+#	lab = labRetriever(nome_paciente, dt).upper()
 
 lab = ""
 st.header("🧪LABORATÓRIO DOM MALAN")
