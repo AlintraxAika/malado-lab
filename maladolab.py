@@ -1,4 +1,4 @@
-import streamlit as st
+#import streamlit as st
 from playwright.sync_api import sync_playwright
 from datetime import date
 import datetime
@@ -83,6 +83,18 @@ def text_cleaner(txt):
 			exam_name = "PCR: "
 			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
+		elif exam_name == "TEMPO DE PROTROMBINA":
+			string = "TP: "
+			pattern = re.search(r'PROTROMBINA.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += pattern.group(1)
+			pattern = re.search(r'ENZIMÁTICA.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += " | ATIV. ENZ.: " + pattern.group(1)
+			pattern = re.search(r'I.N.R.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += " | INR: " + pattern.group(1)
+		elif exam_name == "TEMPO DE TROMBOPLASTINA P. ATIVADA":
+			string = "TTPA: "
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += pattern.group(1)
 		elif exam_name == "CÁLCIO":
 			exam_name = "CA: "
 			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
@@ -116,9 +128,10 @@ def text_cleaner(txt):
 			pattern = re.search(r'PERCENTUAL:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1) + " %"
 		else:
-			return txt
+			return f"{nl}" + txt.replace("\n"," ").replace("  ", " ").replace("  ", " ").replace("  ", " ")
 	except AttributeError:
-		return txt	
+		return f"{nl}" + txt.replace("\n"," ").replace("  ", " ").replace("  ", " ").replace("  ", " ")
+	
 	return string
 
 def labRetriever(name, date):
@@ -128,7 +141,7 @@ def labRetriever(name, date):
 			s = date.split("/")
 			date_limit = datetime.datetime(int(s[2]),int(s[1]),int(s[0]))
 		#browser = p.chromium.launch(executable_path=r"C:\Program Files\Google\Chrome\Application\chrome.exe", headless=False, args=["--ignore-certificate-errors"])
-		browser = p.chromium.launch(headless=True, args=["--ignore-certificate-errors"])
+		browser = p.chromium.launch(headless=False, args=["--ignore-certificate-errors"])
 		page = browser.new_page()
 		page.goto('https://portal.worklabweb.com.br/resultados-on-line/634')
 
@@ -142,12 +155,12 @@ def labRetriever(name, date):
 
 		# Click the login button
 		page.locator('button:has-text("Entrar")').click()
-		page.wait_for_selector('#preloader-vue', state='hidden', timeout=15000)
+		page.wait_for_selector('#preloader-vue', state='hidden', timeout=20000)
 		page.fill('input[name="vf__nompac"]', name)
 		page.keyboard.press('Enter')
 		
 		# Extract exams
-		page.wait_for_selector('#preloader-vue', state='hidden', timeout=15000)
+		page.wait_for_selector('#preloader-vue', state='hidden', timeout=20000)
 		rows = page.query_selector_all("tbody tr")
 		
 		for row in rows:
@@ -164,7 +177,11 @@ def labRetriever(name, date):
 				exam_date = datetime.datetime(int(s[2]),int(s[1]),int(s[0]))
 				if exam_date < date_limit:
 					break
-			text += f"{row_name}:{nl}({row_date}): ".replace("/20", "/")
+			try:
+				text += f"{row_name}:{nl}({row_date}): ".replace("/20", "/")
+			except UnboundLocalError:
+				print("Paciente sem exames.")
+				break
 			if link:
 				link.click()
 				links = page.query_selector_all('a[title*="Pronto"]')
@@ -182,29 +199,31 @@ def labRetriever(name, date):
 		return text
 
 #NO GRAPHICAL INTERFACE
-#print("NOME:", end=" ")
-#nn = input()
-#print("DATA LIMITE (data/x):", end=" ")
-#dt = input()
-#dt = dt.upper()
-#if dt == "X":
-#	lab = labRetriever(nome_paciente, False).upper()
-#else:
-#	lab = labRetriever(nome_paciente, dt).upper()
+print("NOME:", end=" ")
+nn = input()
+print("DATA LIMITE [(dd/mm/aaaa) ou (x)]:", end=" ")
+dt = input()
+dt = dt.upper()
+if dt == "X":
+	with open("laboratorios.txt", "w") as f:
+		f.write(labRetriever(nn, False).upper())
+else:
+	with open("laboratorios.txt", "w") as f:
+		f.write(labRetriever(nn, dt).upper())
 
-lab = ""
-st.header("🧪LABORATÓRIO DOM MALAN")
-st.write("O programa extrai os últimos exames com nome fornecido (no máximo 10). Se extração falhar clique no botão novamente.")
-nome_paciente = st.text_input("NOME:")
-date_true = st.checkbox("INCLUIR DATA LIMITE")
-if date_true:
-	st.write("Incluir somente os exames feitos após a data (escrever no formato dd/mm/aaaa):")
-	c1, c2 = st.columns([2,8])
-	with c1:
-		data = st.text_input("DATA:", value=date.today().strftime("%d/%m/%Y"))
-if st.button("EXTRAIR"):
-	if date_true:
-		lab = labRetriever(nome_paciente, data).upper()
-	else:
-		lab = labRetriever(nome_paciente, False).upper()
-st.text_area("LABORATÓRIO:", height=300, value=lab)
+#lab = ""
+#st.header("🧪LABORATÓRIO DOM MALAN")
+#st.write("O programa extrai os últimos exames com nome fornecido (no máximo 10). Se extração falhar clique no botão novamente.")
+#nome_paciente = st.text_input("NOME:")
+#date_true = st.checkbox("INCLUIR DATA LIMITE")
+#if date_true:
+#	st.write("Incluir somente os exames feitos após a data (escrever no formato dd/mm/aaaa):")
+#	c1, c2 = st.columns([2,8])
+#	with c1:
+#		data = st.text_input("DATA:", value=date.today().strftime("%d/%m/%Y"))
+#if st.button("EXTRAIR"):
+#	if date_true:
+#		lab = labRetriever(nome_paciente, data).upper()
+#	else:
+#		lab = labRetriever(nome_paciente, False).upper()
+#st.text_area("LABORATÓRIO:", height=300, value=lab)
