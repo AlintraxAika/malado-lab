@@ -59,7 +59,7 @@ def text_cleaner(txt):
 			string = exam_name + pattern.group(1)
 		elif exam_name == "RAZAO PROTEINA/CREATININA - URINA":
 			exam_name = "PROT/CR: "
-			pattern = re.search(r'RESULTADO:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			pattern = re.search(r'RELACAO PROTEINA/CREATININA:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "PROTEINURIA 24H":
 			string = "PROT/24H: "
@@ -91,12 +91,24 @@ def text_cleaner(txt):
 			string += " | ATIV. ENZ.: " + pattern.group(1)
 			pattern = re.search(r'I.N.R.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string += " | INR: " + pattern.group(1)
+		elif exam_name == "PROTEÍNAS TOTAIS E FRAÇÕES":
+			string = "PT: "
+			pattern = re.search(r'PROTEINAS TOTAIS.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += pattern.group(1)
+			pattern = re.search(r'ALBUMINA.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += " | ALB: " + pattern.group(1)
+			pattern = re.search(r'GLOBULINAS.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string += " | GLOB: " + pattern.group(1)
 		elif exam_name == "TEMPO DE TROMBOPLASTINA P. ATIVADA":
 			string = "TTPA: "
 			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string += pattern.group(1)
 		elif exam_name == "CÁLCIO":
 			exam_name = "CA: "
+			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
+			string = exam_name + pattern.group(1)
+		elif exam_name == "CLORETOS":
+			exam_name = "CL: "
 			pattern = re.search(r'RESULTADO.*?:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1)
 		elif exam_name == "ALBUMINA":
@@ -128,9 +140,11 @@ def text_cleaner(txt):
 			pattern = re.search(r'PERCENTUAL:\s*(\d+(?:[.,]\d+)?)', txt, re.IGNORECASE)
 			string = exam_name + pattern.group(1) + " %"
 		else:
-			return f"{nl}" + txt.replace("\n"," ").replace("  ", " ").replace("  ", " ").replace("  ", " ")
+			#return f"{nl}" + txt.replace("\n"," ").replace("  ", " ").replace("  ", " ").replace("  ", " ")
+			return exam_name + ": [[EXAME NAO ABARCADO PELO PROGRAMA ATUALMENTE]]"
 	except AttributeError:
-		return f"{nl}" + txt.replace("\n"," ").replace("  ", " ").replace("  ", " ").replace("  ", " ")
+		#return f"{nl}" + txt.replace("\n"," ").replace("  ", " ").replace("  ", " ").replace("  ", " ")
+		return exam_name + ": [[EXAME NAO ABARCADO PELO PROGRAMA ATUALMENTE]]"
 	
 	return string
 
