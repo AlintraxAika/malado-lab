@@ -1,4 +1,6 @@
 #import streamlit as st
+import tkinter as tk
+from tkinter import ttk
 from playwright.sync_api import sync_playwright
 from datetime import date
 import datetime
@@ -194,8 +196,7 @@ def labRetriever(name, date):
 			try:
 				text += f"{row_name}:{nl}({row_date}): ".replace("/20", "/")
 			except UnboundLocalError:
-				print("Paciente sem exames.")
-				break
+				return "Paciente sem exames."
 			if link:
 				link.click()
 				links = page.query_selector_all('a[title*="Pronto"]')
@@ -212,19 +213,60 @@ def labRetriever(name, date):
 		
 		return text
 
-#NO GRAPHICAL INTERFACE
-print("NOME:", end=" ")
-nn = input()
-print("DATA LIMITE [(dd/mm/aaaa) ou (x)]:", end=" ")
-dt = input()
-dt = dt.upper()
-if dt == "X":
-	with open("laboratorios.txt", "w") as f:
-		f.write(labRetriever(nn, False).upper())
-else:
-	with open("laboratorios.txt", "w") as f:
-		f.write(labRetriever(nn, dt).upper())
+def extract_lab():
+    name = name_entry.get()
+    if include_date_var.get():
+        date_str = date_entry.get()
+        result = labRetriever(name, date_str).upper()
+    else:
+        result = labRetriever(name, False).upper()
+    result_text.delete('1.0', tk.END)
+    result_text.insert(tk.END, result)
 
+# TKINTER GUI
+root = tk.Tk()
+root.title("🧪 LABORATÓRIO DOM MALAN")
+
+frame = ttk.Frame(root, padding=20)
+frame.pack()
+
+ttk.Label(frame, text="O programa extrai os últimos exames com nome fornecido (no máximo 10).\nSe extração falhar, clique no botão novamente.").pack(pady=5)
+
+ttk.Label(frame, text="NOME:").pack(anchor="w")
+name_entry = ttk.Entry(frame, width=50)
+name_entry.pack()
+
+include_date_var = tk.BooleanVar()
+date_check = ttk.Checkbutton(frame, text="INCLUIR DATA LIMITE", variable=include_date_var)
+date_check.pack(anchor="w", pady=(10, 0))
+
+ttk.Label(frame, text="DATA (formato dd/mm/aaaa):").pack(anchor="w")
+date_entry = ttk.Entry(frame, width=20)
+date_entry.insert(0, date.today().strftime("%d/%m/%Y"))
+date_entry.pack(anchor="w")
+
+ttk.Button(frame, text="EXTRAIR", command=extract_lab).pack(pady=10)
+
+ttk.Label(frame, text="LABORATÓRIO:").pack(anchor="w")
+result_text = tk.Text(frame, height=50, width=200)
+result_text.pack()
+
+root.mainloop()
+
+#NO GRAPHICAL INTERFACE
+#print("NOME:", end=" ")
+#nn = input()
+#print("DATA LIMITE [(dd/mm/aaaa) ou (x)]:", end=" ")
+#dt = input()
+#dt = dt.upper()
+#if dt == "X":
+#	with open("laboratorios.txt", "w") as f:
+#		f.write(labRetriever(nn, False).upper())
+#else:
+#	with open("laboratorios.txt", "w") as f:
+#		f.write(labRetriever(nn, dt).upper())
+
+#STREAMLIT UI
 #lab = ""
 #st.header("🧪LABORATÓRIO DOM MALAN")
 #st.write("O programa extrai os últimos exames com nome fornecido (no máximo 10). Se extração falhar clique no botão novamente.")
